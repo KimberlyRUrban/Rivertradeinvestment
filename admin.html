@@ -269,6 +269,7 @@
                             <li><a href="#schedule" data-translate="schedule">Schedule</a></li>
                             <li><a href="#holiday" data-translate="holiday">Holiday</a></li>
                             <li><a href="#schema" data-translate="schema">Manage Schema</a></li>
+                            <li><a href="#" onclick="showInvestmentPlansEditor()">Edit Investment Plans</a></li>
                         </ul>
                     </li>
 
@@ -295,6 +296,16 @@
                     </li>
 
                     <li class="nav-item">
+                        <a href="#deposit-settings">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l5 9H7l5-9z"></path>
+                                <path d="M4 22h16"></path>
+                            </svg>
+                            <span>Deposit Settings</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
                         <a href="#investments">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="5" r="3"></circle>
@@ -302,6 +313,32 @@
                                 <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
                             </svg>
                             <span data-translate="investments">Investments</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-category">User Financial Management</li>
+                    
+                    <li class="nav-item">
+                        <a href="#user-management">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span>Manage User Funds</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-category">Expert Trading Management</li>
+                    
+                    <li class="nav-item">
+                        <a href="#expert-management">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"></path>
+                                <path d="M12 7v5l4 2.5" stroke="currentColor" fill="none"></path>
+                            </svg>
+                            <span>Manage Expert Traders</span>
                         </a>
                     </li>
                 </ul>
@@ -435,11 +472,11 @@
             <section id="all-customers" class="content-section" style="display: none;">
                 <div class="content-header">
                     <h1 data-translate="allCustomers">All Customers</h1>
+                    <p>Total Users: <span id="totalUsersCount">0</span></p>
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <input type="text" class="search-input" placeholder="Search customers...">
-                        <button class="btn-primary" data-translate="addCustomer">Add Customer</button>
+                        <input type="text" id="customerSearchInput" class="search-input" placeholder="Search by name or email..." onkeyup="filterCustomers()">
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -448,14 +485,14 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Phone</th>
-                                    <th>Joined</th>
+                                    <th>Balance</th>
                                     <th>Status</th>
-                                    <th>Action</th>
+                                    <th>Joined</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample customer data removed - load from API -->
+                            <tbody id="allCustomersTableBody">
+                                <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading users...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -466,6 +503,7 @@
             <section id="active-customers" class="content-section" style="display: none;">
                 <div class="content-header">
                     <h1 data-translate="activeCustomers">Active Customers</h1>
+                    <p>Active Users: <span id="activeUsersCount">0</span></p>
                 </div>
                 <div class="table-card">
                     <div class="table-responsive">
@@ -475,12 +513,14 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
-                                    <th>Last Activity</th>
+                                    <th>Balance</th>
                                     <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample active customer data removed - load from API -->
+                            <tbody id="activeCustomersTableBody">
+                                <tr><td colspan="6" style="text-align: center; padding: 20px;">Loading active users...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -490,6 +530,7 @@
             <section id="disabled-customers" class="content-section" style="display: none;">
                 <div class="content-header">
                     <h1 data-translate="disabledCustomers">Disabled Customers</h1>
+                    <p>Disabled Users: <span id="disabledUsersCount">0</span></p>
                 </div>
                 <div class="table-card">
                     <div class="table-responsive">
@@ -499,13 +540,14 @@
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Balance</th>
                                     <th>Disabled Date</th>
-                                    <th>Reason</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="disabledCustomersTableBody">
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 20px;">No disabled customers</td>
+                                    <td colspan="6" style="text-align: center; padding: 20px;">No disabled customers</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -529,7 +571,7 @@
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="notificationsTableBody">
                                 <tr>
                                     <td colspan="4" style="text-align: center; padding: 20px;">No notifications sent yet</td>
                                 </tr>
@@ -598,7 +640,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="pendingKycTableBody">
                                 <!-- Sample KYC request removed - load from API -->
                             </tbody>
                         </table>
@@ -622,7 +664,7 @@
                                     <th>Reason</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="rejectedKycTableBody">
                                 <tr>
                                     <td colspan="4" style="text-align: center; padding: 20px;">No rejected KYC requests</td>
                                 </tr>
@@ -649,7 +691,7 @@
                                     <th>Details</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="allKycTableBody">
                                 <!-- Sample KYC data removed - load from API -->
                             </tbody>
                         </table>
@@ -699,7 +741,7 @@
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <button class="btn-primary" data-translate="addRole">Add Role</button>
+                        <button class="btn-primary" data-translate="addRole" onclick="addRole()">Add Role</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -712,16 +754,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Admin</td>
-                                    <td>Full system access</td>
-                                    <td>5</td>
-                                    <td>All</td>
-                                    <td>
-                                        <button class="action-btn" onclick="editRole('1')">Edit</button>
-                                    </td>
-                                </tr>
+                            <tbody id="rolesTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -735,7 +768,7 @@
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <button class="btn-primary" data-translate="addStaff">Add Staff</button>
+                        <button class="btn-primary" data-translate="addStaff" onclick="addStaff()">Add Staff</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -748,8 +781,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample staff data removed - populate from API -->
+                            <tbody id="staffTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -790,7 +822,7 @@
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <button class="btn-primary" data-translate="addHoliday">Add Holiday</button>
+                        <button class="btn-primary" data-translate="addHoliday" onclick="addHoliday()">Add Holiday</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -802,13 +834,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>New Year</td>
-                                    <td>2025-01-01</td>
-                                    <td>Public Holiday</td>
-                                    <td><button class="action-btn" onclick="deleteHoliday('1')">Delete</button></td>
-                                </tr>
+                            <tbody id="holidaysTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -822,7 +848,7 @@
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <button class="btn-primary" data-translate="addSchema">Add Schema</button>
+                        <button class="btn-primary" data-translate="addSchema" onclick="addSchema()">Add Schema</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -836,18 +862,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Gold Plan</td>
-                                    <td>$1,000</td>
-                                    <td>$10,000</td>
-                                    <td>8.5%</td>
-                                    <td>12 months</td>
-                                    <td>
-                                        <button class="action-btn" onclick="editSchema('1')">Edit</button>
-                                        <button class="action-btn" onclick="deleteSchema('1')">Delete</button>
-                                    </td>
-                                </tr>
+                            <tbody id="schemasTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -861,7 +876,7 @@
                 </div>
                 <div class="table-card">
                     <div class="table-header">
-                        <button class="btn-primary" data-translate="addCrowdSchema">Add Crowd Schema</button>
+                        <button class="btn-primary" data-translate="addCrowdSchema" onclick="addCrowdSchema()">Add Crowd Schema</button>
                     </div>
                     <div class="table-responsive">
                         <table class="data-table">
@@ -874,17 +889,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Crowd Investment 1</td>
-                                    <td>45</td>
-                                    <td>$50,000</td>
-                                    <td><span class="badge success">Active</span></td>
-                                    <td>
-                                        <button class="action-btn" onclick="editCrowdSchema('1')">Edit</button>
-                                        <button class="action-btn" onclick="deleteCrowdSchema('1')">Delete</button>
-                                    </td>
-                                </tr>
+                            <tbody id="crowdSchemasTableBody">
                             </tbody>
                         </table>
                     </div>
@@ -930,6 +935,28 @@
                 </div>
             </section>
 
+            <!-- DEPOSIT SETTINGS SECTION -->
+            <section id="deposit-settings" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1>Deposit Settings</h1>
+                </div>
+                <div class="table-card">
+                    <div class="table-header">
+                        <button class="btn-primary" onclick="openDepositSettingsModal()">Edit Deposit Settings</button>
+                    </div>
+                    <div class="table-responsive">
+                        <div class="settings-summary" style="padding:20px; background:#fff; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+                            <h3>Current Deposit Instructions</h3>
+                            <p><strong>Crypto wallet:</strong> <span id="adminCryptoAddressDisplay"></span></p>
+                            <p><strong>Bank transfer:</strong> <span id="adminBankDetailsDisplay"></span></p>
+                            <p><strong>Card payment:</strong> <span id="adminCardDetailsDisplay"></span></p>
+                            <p><strong>Allowed withdrawal methods:</strong> <span id="adminEnabledWithdrawMethodsDisplay"></span></p>
+                            <p><strong>Allowed methods:</strong> <span id="adminEnabledMethodsDisplay"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- INVESTMENTS SECTION -->
             <section id="investments" class="content-section" style="display: none;">
                 <div class="content-header">
@@ -949,16 +976,329 @@
                                     <th>Expected Return</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample investment data removed - load from API -->
+                            <tbody id="investmentsTableBody">
                             </tbody>
                         </table>
                     </div>
                 </div>
             </section>
+
+            <!-- USER FINANCIAL MANAGEMENT SECTION -->
+            <section id="user-management" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1>Manage User Funds</h1>
+                    <p>Top up user balance, investment profit, and manage all financial aspects</p>
+                </div>
+
+                <div class="form-card">
+                    <h2 style="margin-bottom: 20px;">Search User</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label>Search by Email or Name</label>
+                            <input type="text" id="userSearchInput" placeholder="Enter email or name..." onkeyup="searchUsers(this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn-primary" onclick="clearUserSearch()" style="width: 100%;">Clear Search</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Search Results -->
+                <div id="userSearchResults" class="table-card" style="display: none;">
+                    <h2 style="margin-bottom: 15px;">Search Results</h2>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Balance</th>
+                                    <th>Investment Profit</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="userSearchResultsBody">
+                                <!-- Results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Details Modal -->
+                <div id="userDetailsModal" class="form-card" style="display: none; margin-top: 30px;">
+                    <h2 id="userDetailsTitle" style="margin-bottom: 20px;">User Financial Details</h2>
+                    
+                    <div id="userDetailsContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                        <!-- User details will be populated here -->
+                    </div>
+
+                    <!-- Admin editors modal (hidden until opened) -->
+                    <div id="adminEditorModal" style="display: none; position:fixed; inset:0; background: rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;"> 
+                        <div style="background:#fff; width:100%; max-width:980px; border-radius:8px; overflow:hidden;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid #eee;">
+                                <div style="font-weight:700;">Admin: Edit User</div>
+                                <div style="display:flex; gap:8px;">
+                                    <button class="btn-secondary" onclick="closeAdminEditors()">Close</button>
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:0;">
+                                <div style="width:220px; border-right:1px solid #f0f0f0; padding:12px;">
+                                    <button class="btn-primary" style="width:100%; margin-bottom:8px;" onclick="showAdminEditorTab('investments')">Investments</button>
+                                    <button class="btn-primary" style="width:100%; margin-bottom:8px;" onclick="showAdminEditorTab('referrals')">Referrals</button>
+                                    <button class="btn-primary" style="width:100%; margin-bottom:8px;" onclick="showAdminEditorTab('swaps')">Swaps</button>
+                                    <button class="btn-primary" style="width:100%; margin-bottom:8px;" onclick="showAdminEditorTab('transactions')">Transactions</button>
+                                </div>
+                                <div style="flex:1; padding:16px; max-height:75vh; overflow:auto;">
+                                    <div id="adminEditorsContainer">
+                        <div id="investmentsEditor" style="display: none; background:#fff; padding:15px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;">
+                            <h3>Manage Investments</h3>
+                            <div id="investmentsList" style="margin-bottom:10px; font-size:14px;"></div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input id="newInvestmentPlan" placeholder="Plan id/name" style="flex:1; padding:8px;" />
+                                <input id="newInvestmentAmount" type="number" placeholder="Amount" style="width:120px; padding:8px;" />
+                                <select id="newInvestmentStatus" style="width:140px; padding:8px;"><option value="active">active</option><option value="completed">completed</option><option value="cancelled">cancelled</option></select>
+                                <button class="btn-primary" onclick="addInvestmentFromEditor()">Add</button>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;"><button class="btn-secondary" onclick="closeAdminEditors()">Close</button><button class="btn-primary" onclick="saveInvestmentsEditor()">Save</button></div>
+                        </div>
+
+                        <div id="referralsEditor" style="display: none; background:#fff; padding:15px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;">
+                            <h3>Manage Referrals</h3>
+                            <div id="referralsList" style="margin-bottom:10px; font-size:14px;"></div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input id="newReferralEmail" placeholder="Referral email/code" style="flex:1; padding:8px;" />
+                                <input id="newReferralBonus" type="number" placeholder="Bonus" style="width:120px; padding:8px;" />
+                                <button class="btn-primary" onclick="addReferralFromEditor()">Add</button>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;"><button class="btn-secondary" onclick="closeAdminEditors()">Close</button><button class="btn-primary" onclick="saveReferralsEditor()">Save</button></div>
+                        </div>
+
+                        <div id="swapsEditor" style="display: none; background:#fff; padding:15px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;">
+                            <h3>Manage Swaps</h3>
+                            <div id="swapsList" style="margin-bottom:10px; font-size:14px;"></div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input id="newSwapFrom" placeholder="From (USD or symbol)" style="padding:8px;" />
+                                <input id="newSwapTo" placeholder="To (symbol)" style="padding:8px;" />
+                                <input id="newSwapAmount" type="number" placeholder="Amount" style="width:120px; padding:8px;" />
+                                <button class="btn-primary" onclick="addSwapFromEditor()">Add</button>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;"><button class="btn-secondary" onclick="closeAdminEditors()">Close</button><button class="btn-primary" onclick="saveSwapsEditor()">Save</button></div>
+                        </div>
+
+                        <div id="transactionsEditor" style="display: none; background:#fff; padding:15px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;">
+                            <h3>Manage Transactions</h3>
+                            <div id="transactionsList" style="margin-bottom:10px; font-size:14px;"></div>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <select id="newTxType" style="padding:8px;"><option value="deposit">deposit</option><option value="withdraw">withdraw</option></select>
+                                <input id="newTxAmount" type="number" placeholder="Amount" style="width:120px; padding:8px;" />
+                                <input id="newTxStatus" placeholder="Status" style="padding:8px;" />
+                                <button class="btn-primary" onclick="addTransactionFromEditor()">Add</button>
+                            </div>
+                            <div style="margin-top:10px; display:flex; gap:8px; justify-content:flex-end;"><button class="btn-secondary" onclick="closeAdminEditors()">Close</button><button class="btn-primary" onclick="saveTransactionsEditor()">Save</button></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div style="border-top: 1px solid #ddd; padding-top: 20px; margin-top: 20px;">
+                        <h3 style="margin-bottom: 20px;">Financial Operations</h3>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                            <!-- Top Up Balance Section -->
+                            <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                                <h4 style="margin-bottom: 15px;">Top Up Available Balance</h4>
+                                <div class="form-group">
+                                    <label>Amount to Add (USD)</label>
+                                    <input type="number" id="topupBalanceAmount" placeholder="Enter amount" min="0" step="0.01">
+                                </div>
+                                <button class="btn-primary" onclick="topupUserBalance()" style="width: 100%;">Add Balance</button>
+                            </div>
+
+                            <!-- Top Up Profit Section -->
+                            <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                                <h4 style="margin-bottom: 15px;">Top Up Investment Profit</h4>
+                                <div class="form-group">
+                                    <label>Profit Amount (USD)</label>
+                                    <input type="number" id="topupProfitAmount" placeholder="Enter amount" min="0" step="0.01">
+                                </div>
+                                <button class="btn-primary" onclick="topupUserProfit()" style="width: 100%;">Add Profit</button>
+                            </div>
+
+                            <!-- Add Crypto Holding Section -->
+                            <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                                <h4 style="margin-bottom: 15px;">Add Crypto Holding</h4>
+                                <div class="form-group">
+                                    <label>Cryptocurrency</label>
+                                    <select id="cryptoType">
+                                        <option value="BTC">Bitcoin (BTC)</option>
+                                        <option value="ETH">Ethereum (ETH)</option>
+                                        <option value="USDT">Tether (USDT)</option>
+                                        <option value="BNB">Binance Coin (BNB)</option>
+                                        <option value="XRP">Ripple (XRP)</option>
+                                        <option value="DOGE">Dogecoin (DOGE)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <input type="number" id="cryptoAmount" placeholder="Enter amount" min="0" step="0.000001">
+                                </div>
+                                <button class="btn-primary" onclick="addUserCrypto()" style="width: 100%;">Add Crypto</button>
+                            </div>
+
+                            <!-- Add Broker Balance Section -->
+                            <div style="padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                                <h4 style="margin-bottom: 15px;">Top Up Broker Account</h4>
+                                <div class="form-group">
+                                    <label>Amount to Add (USD)</label>
+                                    <input type="number" id="topupBrokerAmount" placeholder="Enter amount" min="0" step="0.01">
+                                </div>
+                                <button class="btn-primary" onclick="topupBrokerBalance()" style="width: 100%;">Add to Broker</button>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; flex-wrap: wrap;">
+                            <button class="btn-secondary" onclick="closeUserDetails()">Close</button>
+                            <button class="btn-primary" onclick="showInvestmentsEditor()">Manage Investments</button>
+                            <button class="btn-primary" onclick="showReferralsEditor()">Manage Referrals</button>
+                            <button class="btn-primary" onclick="showSwapsEditor()">Manage Swaps</button>
+                            <button class="btn-primary" onclick="showTransactionsEditor()">Manage Transactions</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- EXPERT TRADER MANAGEMENT SECTION -->
+            <section id="expert-management" class="content-section" style="display: none;">
+                <div class="content-header">
+                    <h1>Expert Trading Management</h1>
+                    <p>Add, edit, and manage expert traders available to users</p>
+                </div>
+
+                <div class="form-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="margin: 0;">Expert Traders</h2>
+                        <button class="btn-primary" onclick="openAddExpertModal()" style="padding: 10px 20px;">+ Add New Expert</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Title</th>
+                                    <th>Experience</th>
+                                    <th>Success Rate</th>
+                                    <th>Avg ROI</th>
+                                    <th>Followers</th>
+                                    <th>Min Investment</th>
+                                    <th>Verified</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expertsTableBody">
+                                <!-- Experts will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Add/Edit Expert Modal -->
+            <div id="expertModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+                <div style="background: white; border-radius: 10px; padding: 30px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 id="expertModalTitle" style="margin: 0;">Add New Expert Trader</h2>
+                        <button onclick="closeExpertModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                    </div>
+
+                    <form id="expertForm" onsubmit="saveExpert(event)">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="expertName" placeholder="Expert's full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Professional Title *</label>
+                                <input type="text" id="expertTitle" placeholder="e.g., Bitcoin Trading Specialist" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Bio/Description *</label>
+                            <textarea id="expertBio" placeholder="Brief description of expertise" rows="3" required></textarea>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Years of Experience *</label>
+                                <input type="text" id="expertExperience" placeholder="e.g., 8 years" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Specialty *</label>
+                                <input type="text" id="expertSpecialty" placeholder="e.g., BTC/USD" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Success Rate (%) *</label>
+                                <input type="number" id="expertSuccessRate" min="0" max="100" step="0.1" placeholder="75.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Average ROI (%) *</label>
+                                <input type="number" id="expertAvgROI" min="0" step="0.1" placeholder="25.5" required>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group">
+                                <label>Total Followers *</label>
+                                <input type="number" id="expertFollowers" min="0" step="1" placeholder="2500" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Minimum Investment (USD) *</label>
+                                <input type="number" id="expertMinInvestment" min="0" step="1" placeholder="100" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="expertVerified"> Verified Expert
+                            </label>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                            <button type="button" class="btn-secondary" onclick="closeExpertModal()">Cancel</button>
+                            <button type="submit" class="btn-primary">Save Expert</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </main>
     </div>
 
+            <!-- Investment Plans Editor Modal -->
+            <div id="plansEditorModal" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Investment Plans Editor</h3>
+                        <button class="modal-close" onclick="closePlansEditor()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="plansEditorList" class="plans-list"></div>
+                        <div style="margin-top:12px; display:flex; gap:8px;">
+                            <button class="btn" onclick="addPlanFromEditor()">Add Plan</button>
+                            <button class="btn primary" onclick="savePlansEditor()">Save Plans</button>
+                            <button class="btn" onclick="closePlansEditor()">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    <script src="funds-management.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

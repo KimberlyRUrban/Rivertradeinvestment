@@ -536,7 +536,7 @@
 
         <div class="member reveal" style="--delay:720ms">
           <div class="avatar">TW</div>
-          <h5>Thomas Wilson</h5>
+          <h5>Thomas Eric</h5>
           <p class="role">Head of Security</p>
           <p style="color:var(--muted); font-size:13px; margin-top:8px;">Cybersecurity expert dedicated to protecting user assets.</p>
         </div>
@@ -717,23 +717,57 @@
   <a href="../index.html#home">Home</a>
   <a href="../auth.html#login">Login</a>
   <a href="../auth.html#register">Sign Up</a>
-  <a href="contact.html#contact">About / Contact</a>
+  <a href="about.html#contact">About / Contact</a>
 </div>
 
 <script>
-// Mobile menu toggle added by updater
-(function(){
+// Mobile menu: ensure clicking the hamburger closes the panel and links hide it
+document.addEventListener('DOMContentLoaded', function(){
   const btn = document.getElementById('mobileMenuToggle');
   const panel = document.getElementById('mobileMenuPanel');
-  if(!btn || !panel) return;
+  
+  if(!btn || !panel) {
+    console.warn('Mobile menu elements not found');
+    return;
+  }
 
-  function toggle(){ if(panel.classList.contains('active')) panel.classList.remove('active'); else panel.classList.add('active'); }
-  btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
-  panel.addEventListener('click', function(e){ e.stopPropagation(); });
-  panel.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ panel.classList.remove('active'); }); });
-  document.addEventListener('click', function(e){ if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) panel.classList.remove('active'); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' || e.key === 'Esc') panel.classList.remove('active'); });
-})();
+  function toggle(){
+    if(panel.classList.contains('active')) {
+      panel.classList.remove('active');
+    } else {
+      panel.classList.add('active');
+    }
+  }
+
+  btn.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+    toggle(); 
+  });
+  
+  panel.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+  });
+  
+  panel.querySelectorAll('a').forEach(function(a){ 
+    a.addEventListener('click', function(){ 
+      panel.classList.remove('active'); 
+    }); 
+  });
+  
+  document.addEventListener('click', function(e){ 
+    if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.classList.remove('active'); 
+    }
+  });
+  
+  document.addEventListener('keydown', function(e){ 
+    if(e.key === 'Escape' || e.key === 'Esc'){ 
+      panel.classList.remove('active'); 
+    } 
+  });
+  
+  console.log('Mobile menu initialized');
+});
 </script>
   <!-- <script src="../frontend-api.js"></script> -->
   

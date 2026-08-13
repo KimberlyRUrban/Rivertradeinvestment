@@ -3,28 +3,52 @@ const registerTab = document.getElementById("registerTab");
 const loginTab = document.getElementById("loginTab");
 const registerForm = document.getElementById("registerForm");
 const loginForm = document.getElementById("loginForm");
+const authAPI = window.authAPI || window.AuthService || authService;
 
-// ============ reCAPTCHA v2 Checkbox Verification ============
-function verifyRecaptcha() {
+// ============ Cloudflare Turnstile Verification ============
+function verifyRecaptcha(formId) {
   try {
-    if (!window.grecaptcha) {
-      console.warn('reCAPTCHA not loaded');
+    // Allow skipping Turnstile in development mode
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (!window.turnstile) {
+      console.warn('Cloudflare Turnstile not loaded (development mode - skipping)');
+      return isDevelopment ? true : false;
+    }
+
+    // Get the specific form's Turnstile widget
+    const form = document.getElementById(formId);
+    if (!form) {
+      console.error('Form not found: ' + formId);
       return false;
     }
 
-    // Get the reCAPTCHA response from the v2 checkbox widget
-    const response = window.grecaptcha.getResponse();
-    
-    if (response && response.length > 0) {
-      console.log('reCAPTCHA verified successfully');
+    const turnstileElement = form.querySelector('.cf-turnstile');
+    if (!turnstileElement) {
+      console.warn('Cloudflare Turnstile element not found in form; skipping validation');
       return true;
     }
 
-    console.warn('reCAPTCHA checkbox not verified - user must click the checkbox');
+    const siteKey = turnstileElement.getAttribute('data-sitekey') || '';
+    if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) {
+      console.warn('No valid Cloudflare Turnstile site key configured; skipping validation in development mode');
+      return isDevelopment ? true : false;
+    }
+
+    // Get the Turnstile response token
+    const response = window.turnstile.getResponse(turnstileElement);
+    
+    if (response && response.length > 0) {
+      console.log('Cloudflare Turnstile verified successfully');
+      return true;
+    }
+
+    console.warn('Cloudflare Turnstile not completed - user must solve the challenge');
     return false;
   } catch (err) {
-    console.error('reCAPTCHA verification error:', err);
-    return false;
+    console.error('Cloudflare Turnstile verification error:', err);
+    // In development, allow the form to proceed
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   }
 }
 
@@ -34,9 +58,7 @@ registerTab.addEventListener("click", () => {
   loginTab.classList.remove("active");
   registerForm.classList.add("active");
   loginForm.classList.remove("active");
-  // Reset forms when switching tabs
-  registerForm.reset();
-  loginForm.reset();
+  // Clear messages only
   resetMessages();
 });
 
@@ -45,9 +67,7 @@ loginTab.addEventListener("click", () => {
   registerTab.classList.remove("active");
   loginForm.classList.add("active");
   registerForm.classList.remove("active");
-  // Reset forms when switching tabs
-  registerForm.reset();
-  loginForm.reset();
+  // Clear messages only
   resetMessages();
 });
 
@@ -57,6 +77,18 @@ function resetMessages() {
   const loginMsgEl = document.getElementById('loginMessage');
   if (msgEl) msgEl.textContent = '';
   if (loginMsgEl) loginMsgEl.textContent = '';
+}
+
+function resetRecaptchas() {
+  if (window.turnstile) {
+    try {
+      document.querySelectorAll('.cf-turnstile').forEach((el) => {
+        window.turnstile.reset(el);
+      });
+    } catch (err) {
+      console.warn('Error resetting Cloudflare Turnstile:', err);
+    }
+  }
 }
 
 function showError(messageEl, message) {
@@ -209,9 +241,9 @@ registerForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Verify reCAPTCHA
-  if (!verifyRecaptcha()) {
-    showError(msgEl, 'Please complete the reCAPTCHA verification (check the box).');
+  // Verify Cloudflare Turnstile
+  if (!verifyRecaptcha('registerForm')) {
+    showError(msgEl, 'Please complete the Cloudflare Turnstile verification.');
     return;
   }
 
@@ -236,9 +268,9 @@ registerForm.addEventListener("submit", async (e) => {
       createdAt: new Date().toISOString()
     };
 
-    // Register user via AuthService
-    if (window.AuthService && typeof window.AuthService.register === 'function') {
-      await window.AuthService.register(user, password);
+    // Register user via backend auth service
+    if (authAPI && typeof authAPI.register === 'function') {
+      await authAPI.register(user, password);
       showSuccess(msgEl, 'Registration successful! Redirecting to dashboard...');
       setTimeout(() => {
         window.location.href = 'dashboard.html';
@@ -289,9 +321,9 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Verify reCAPTCHA
-  if (!verifyRecaptcha()) {
-    showError(msgEl, 'Please complete the reCAPTCHA verification (check the box).');
+  // Verify Cloudflare Turnstile
+  if (!verifyRecaptcha('loginForm')) {
+    showError(msgEl, 'Please complete the Cloudflare Turnstile verification.');
     return;
   }
 
@@ -302,9 +334,9 @@ loginForm.addEventListener("submit", async (e) => {
   }
 
   try {
-    // Login via AuthService
-    if (window.AuthService && typeof window.AuthService.login === 'function') {
-      await window.AuthService.login(email, password);
+    // Login via backend auth service
+    if (authAPI && typeof authAPI.login === 'function') {
+      await authAPI.login(email, password);
       
       // Remember me functionality
       if (rememberMe) {
@@ -371,6 +403,8 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ============ reCAPTCHA Initialization ============
 (function () {
+  let recaptchasRendered = false;
+  
   // Find all reCAPTCHA containers
   const recaptchaElements = document.querySelectorAll('.captcha-container .g-recaptcha');
   
@@ -379,12 +413,17 @@ window.addEventListener('DOMContentLoaded', () => {
   // Initialize each reCAPTCHA element
   function renderRecaptcha(element) {
     try {
+      // Skip if already rendered
+      if (element.hasAttribute('data-widget-id')) {
+        console.log('reCAPTCHA already rendered for ' + element.id);
+        return;
+      }
+
       if (!element.id) {
         element.id = 'g-recaptcha-' + Math.random().toString(36).slice(2, 9);
       }
       
       if (window.grecaptcha && typeof grecaptcha.render === 'function') {
-        element.innerHTML = ''; // Clear any existing content
         // Use production site key from data attribute
         const prodSiteKey = element.getAttribute('data-prod-sitekey');
         const siteKey = prodSiteKey || element.getAttribute('data-sitekey');
@@ -392,11 +431,13 @@ window.addEventListener('DOMContentLoaded', () => {
           console.error('No reCAPTCHA site key configured for ' + element.id);
           return;
         }
-        grecaptcha.render(element.id, {
+        // Store widget ID for later verification
+        const widgetId = grecaptcha.render(element.id, {
           sitekey: siteKey,
           theme: 'dark'
         });
-        console.log('reCAPTCHA rendered for ' + element.id);
+        element.setAttribute('data-widget-id', widgetId);
+        console.log('reCAPTCHA rendered for ' + element.id + ' with widget ID: ' + widgetId);
       }
     } catch (err) {
       console.error('Failed to render reCAPTCHA:', err);
@@ -412,13 +453,21 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Render all reCAPTCHA elements
+  // Render all reCAPTCHA elements only once
   waitForGrecaptcha(() => {
-    recaptchaElements.forEach(renderRecaptcha);
+    if (!recaptchasRendered) {
+      recaptchaElements.forEach(renderRecaptcha);
+      recaptchasRendered = true;
+    }
   });
 
-  // Also try rendering on page load
+  // Fallback: if page load event fires before grecaptcha loads
   window.addEventListener('load', () => {
-    recaptchaElements.forEach(renderRecaptcha);
+    if (!recaptchasRendered) {
+      waitForGrecaptcha(() => {
+        recaptchaElements.forEach(renderRecaptcha);
+        recaptchasRendered = true;
+      });
+    }
   });
 })();

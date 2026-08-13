@@ -1,0 +1,13 @@
+{
+  "name": "advance-rivertrade",
+  "version": "1.0.0",
+  "description": "Backend integration for the Rivertrade frontend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

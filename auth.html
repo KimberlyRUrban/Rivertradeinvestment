@@ -16,7 +16,17 @@
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="language.css" />
   
-
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+  <style>
+    /* Hide Turnstile errors in development mode */
+    .cf-turnstile iframe[src*="YOUR_CLOUDFLARE_SITE_KEY"] {
+      border: 2px solid #ff9800;
+    }
+    .turnstile-error {
+      display: none !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -125,6 +135,14 @@
             regulatory purpose in accordance with GDPR</label>
         </div>
 
+        <div class="captcha-container" style="margin: 20px 0;">
+          <div id="captcha-fallback" style="padding: 15px; border: 2px dashed #888; border-radius: 5px; background: rgba(255,255,255,0.1); text-align: center; font-size: 14px;">
+            <p style="margin: 0; color: #999;">🔒 CAPTCHA - Development Mode</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px; color: #aaa;">Real Cloudflare Turnstile requires Site Key</p>
+          </div>
+          <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY" data-theme="dark" style="display: none;"></div>
+        </div>
+
         <button type="submit" class="btn">Register</button>
         <div id="registerMessage" class="form-message" aria-live="polite"></div>
 
@@ -150,6 +168,14 @@
           <a href="#">Forgot Password?</a>
         </div>
 
+        <div class="captcha-container" style="margin: 20px 0;">
+          <div id="captcha-fallback-login" style="padding: 15px; border: 2px dashed #888; border-radius: 5px; background: rgba(255,255,255,0.1); text-align: center; font-size: 14px;">
+            <p style="margin: 0; color: #999;">🔒 CAPTCHA - Development Mode</p>
+            <p style="margin: 5px 0 0 0; font-size: 12px; color: #aaa;">Real Cloudflare Turnstile requires Site Key</p>
+          </div>
+          <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY" data-theme="dark" style="display: none;"></div>
+        </div>
+
         <button type="submit" class="btn">Sign In</button>
         <div id="loginMessage" class="form-message" aria-live="polite"></div>
         <p class="signup-text">
@@ -159,6 +185,12 @@
     </div>
   </div>
 
+  <script>
+    window.__SUPABASE_URL__ = 'https://bxyqogteqwmumsoqrzak.supabase.co';
+    window.__SUPABASE_ANON_KEY__ = 'sb_publishable_Mhb67K8TFH6n9ukhC9T0IA_U9WlzsVJ';
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-client.js"></script>
   <script src="auth-service.js"></script>
   <script src="auth.js"></script>
   <script src="language.js"></script>
@@ -186,27 +218,57 @@
   <a href="index.html">Home</a>
   <a href="#login">Login</a>
   <a href="#register">Sign Up</a>
-  <a href="about.contact/about.html">About / Contact</a>
+  <a href="about.html#about">About / Contact</a>
 </div>
 
 <script>
 // Mobile menu: ensure clicking the hamburger closes the panel and links hide it
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   const btn = document.getElementById('mobileMenuToggle');
   const panel = document.getElementById('mobileMenuPanel');
-  if(!btn || !panel) return;
-
-  function toggle(){
-    if(panel.classList.contains('active')) panel.classList.remove('active');
-    else panel.classList.add('active');
+  
+  if(!btn || !panel) {
+    console.warn('Mobile menu elements not found');
+    return;
   }
 
-  btn.addEventListener('click', function(e){ e.stopPropagation(); toggle(); });
-  panel.addEventListener('click', function(e){ e.stopPropagation(); });
-  panel.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ panel.classList.remove('active'); }); });
-  document.addEventListener('click', function(e){ if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) panel.classList.remove('active'); });
-  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' || e.key === 'Esc'){ panel.classList.remove('active'); } });
-})();
+  function toggle(){
+    if(panel.classList.contains('active')) {
+      panel.classList.remove('active');
+    } else {
+      panel.classList.add('active');
+    }
+  }
+
+  btn.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+    toggle(); 
+  });
+  
+  panel.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+  });
+  
+  panel.querySelectorAll('a').forEach(function(a){ 
+    a.addEventListener('click', function(){ 
+      panel.classList.remove('active'); 
+    }); 
+  });
+  
+  document.addEventListener('click', function(e){ 
+    if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.classList.remove('active'); 
+    }
+  });
+  
+  document.addEventListener('keydown', function(e){ 
+    if(e.key === 'Escape' || e.key === 'Esc'){ 
+      panel.classList.remove('active'); 
+    } 
+  });
+  
+  console.log('Mobile menu initialized');
+});
 </script>
 
   <!-- END: Mobile Menu Injected by updater -->

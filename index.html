@@ -27,30 +27,46 @@
     <nav>
       <img src="./icoinred/logo-88256519050c5e84fcbd2120a81b2097.svg" alt="">
       <ul>
-        <li class="botton desktop-only"><a href="index.html">HOME</a></li>
-        <li class="desktop-only"><a href="auth.html#login">LOGIN</a></li>
-        <li class="desktop-only"><a href="auth.html#register">REGISTER</a></li>
+        <li class="desktop-only dropdown">
+          <a href="#" class="dropdown-toggle"><span data-i18n="about">ABOUT</span> <i class="fa-solid fa-chevron-down"></i></a>
+          <ul class="dropdown-menu">
+            <li><a href="about.html#about" data-i18n="about-us">About Us</a></li>
+            <li><a href="contact.html#support" data-i18n="contact-us">Contact Us</a></li>
+            <li><a href="#" data-i18n="company-info">Company Info</a></li>
+          </ul>
+        </li>
+        <li class="desktop-only nav-actions">
+          <button class="nav-language" title="Language">
+            <i class="fa-solid fa-globe"></i>
+          </button>
+          <span class="nav-slash">/</span>
+        </li>
+        <li class="botton desktop-only"><a href="index.html" data-i18n="home">HOME</a></li>
+        <li class="desktop-only"><a href="auth.html#login" data-i18n="login">Log in</a></li>
+        <li class="desktop-only"><a href="auth.html#register" data-i18n="signup">Sign up</a></li>
       </ul>
     </nav>
 
   </header>
 
-
+  <div class="hero-banner">
+    <img src="./crypt-icon/ee9293217b1dcec8bd29b5e90013e91901634793-3083x1464.png" alt="Cryptocurrency Market Overview">
+  </div>
     <div class="stats">
         <div class="card">
-            <h3>Market Cap</h3>
+            <h3 data-i18n="market-cap">Market Cap</h3>
             <p id="market-cap">--</p>
         </div>
         <div class="card">
-            <h3>Volume</h3>
+            <h3 data-i18n="volume">Volume</h3>
             <p id="volume">--</p>
         </div>
         <div class="card">
-            <h3>BTC Dominance</h3>
+            <h3 data-i18n="btc-dominance">BTC Dominance</h3>
             <p id="btc">--</p>
         </div>
         <div class="card">
-            <h3>ETH Dominance</h3>
+            <h3 data-i18n="eth-dominance">ETH Dominance</h3>
             <p id="eth">--</p>
         </div>
     </div>
@@ -58,23 +74,23 @@
     <section class="marketvh">
         <div class="search-filter">
             <div class="tabs">
-                <button class="active" data-filter="recent">Recent</button>
-                <button data-filter="gainers">Gainers</button>
-                <button data-filter="roi">ROI</button>
+                <button class="active" data-filter="recent" data-i18n="recent">Recent</button>
+                <button data-filter="gainers" data-i18n="gainers">Gainers</button>
+                <button data-filter="roi" data-i18n="roi">ROI</button>
             </div>
-            <input type="text" id="search" placeholder="Search coin..." />
+            <input type="text" id="search" placeholder="Search coin..." data-i18n-placeholder="search-coin" />
         </div>
 
         <div class="table-container">
             <table id="projects">
                 <thead>
                     <tr>
-                        <th data-sort="name">NAME</th>
-                        <th data-sort="rank">RANK</th>
-                        <th data-sort="price">PRICE</th>
-                        <th data-sort="change">24H CHANGE</th>
-                        <th data-sort="roi">ROI</th>
-                        <th data-sort="marketcap">MARKET CAP</th>
+                        <th data-sort="name" data-i18n="name">NAME</th>
+                        <th data-sort="rank" data-i18n="rank">RANK</th>
+                        <th data-sort="price" data-i18n="price">PRICE</th>
+                        <th data-sort="change" data-i18n="change">24H CHANGE</th>
+                        <th data-sort="roi" data-i18n="roi">ROI</th>
+                        <th data-sort="marketcap" data-i18n="market-cap-label">MARKET CAP</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -83,57 +99,62 @@
     </section>
     <!-- Crypto Market Overview End-->
 
+  <section class="feature-advanced-trader">
+    <h3 data-i18n="features-traders">Features for advanced traders</h3>
+    <p data-i18n="features-desc">Utilize a suite of tools designed for deep technical analysis, custom price alerts, advanced order types, and ladder trading.</p>
+    <img src="./crypt-icon/6eed12ecb89bee4eb23ddc692a354f34400f0f62-2531x1300.png" alt="Features for Advanced Traders">
+  </section>
   <section class="packages1" id="packages1">
-    <h2 class="pack1">INVESTMENT PLANS</h2>
-    <P class="perfect">Choose the perfect investment plan that suits your trading goals and financial objectives</P>
+    <h2 class="pack1" data-i18n="investment-plans">INVESTMENT PLANS</h2>
+    <P class="perfect" data-i18n="choose-plan">Choose the perfect investment plan that suits your trading goals and financial objectives</P>
 
     <div class="packages">
       <div class="card">
-        <h2>STARTER PACKAGE</h2>
-        <p>FOR</p>
+        <h2 data-i18n="starter">STARTER PACKAGE</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$5,000 - $9,000</h3>
         <button class="invest-btn" data-plan="starter" data-name="Starter Plan" data-min="5000"
-          data-max="9000">Get&nbsp;Started</button>
+          data-max="9000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
 
       <div class="card">
-        <h2>DELUXE PACKAGE</h2>
-        <p>FOR</p>
+        <h2 data-i18n="deluxe">DELUXE PACKAGE</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$10,000 - $29,000</h3>
         <button class="invest-btn" data-plan="deluxe" data-name="Deluxe Plan" data-min="10000"
-          data-max="29000">Get&nbsp;Started</button>
+          data-max="29000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
 
       <div class="card">
-        <h2>PREMIUM PACKAGE</h2>
-        <p>FOR</p>
+        <h2 data-i18n="premium">PREMIUM PACKAGE</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$30000 - $49000</h3>
         <button class="invest-btn" data-plan="premium" data-name="Premium Plan" data-min="30000"
-          data-max="49000">Get&nbsp;Started</button>
+          data-max="49000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
 
       <div class="card">
-        <h2>VIP PACKAGE</h2>
-        <p>FOR</p>
+        <h2 data-i18n="vip">VIP PACKAGE</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$100000 - $150000</h3>
         <button class="invest-btn" data-plan="vip" data-name="VIP Plan" data-min="100000"
-          data-max="150000">Get&nbsp;Started</button>
+          data-max="150000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
 
       <div class="card">
-        <h2>GOLD PACKAGE</h2>
-        <p>FOR</p>
+        <h2 data-i18n="gold">GOLD PACKAGE</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$200,000 - $300,000</h3>
         <button class="invest-btn" data-plan="gold" data-name="Gold Plan" data-min="200000"
-          data-max="300000">Get&nbsp;Started</button>
+          data-max="300000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
 
       <div class="card">
-        <h2>VIP PLATINUM</h2>
-        <p>FOR</p>
+        <h2 data-i18n="platinum">VIP PLATINUM</h2>
+        <p data-i18n="for">FOR</p>
         <h3>$500,000 - $1,000,000</h3>
         <button class="invest-btn" data-plan="vip_platinum" data-name="VIP Platinum" data-min="500000"
-          data-max="1000000">Get&nbsp;Started</button>
+          data-max="1000000" data-i18n="get-started">Get&nbsp;Started</button>
       </div>
     </div>
   </section>
@@ -145,9 +166,9 @@
         <!-- Section Heading Starts -->
         <div class="col-md-12">
           <h2 class="title-head text-center">
-            <span>Bitcoin</span> Calculator
+            <span data-i18n="bitcoin-calculator">Bitcoin Calculator</span>
           </h2>
-          <p class="message text-center">
+          <p class="message text-center" data-i18n="btc-calc-desc">
             Find out the current Bitcoin value with our easy-to-use converter
           </p>
         </div>
@@ -182,7 +203,7 @@
             </div>
           </form>
 
-          <p class="info"><i>* Data updated every 15 minutes</i></p>
+          <p class="info" data-i18n="data-updated"><i>* Data updated every 15 minutes</i></p>
         </div>
       </div>
     </div>
@@ -197,13 +218,13 @@
           <div class="col-xs-12">
             <!-- Call To Action Text Starts -->
             <div class="action-text">
-              <h2>Secure & Fast Transactions</h2>
-              <p class="lead">We offer a comprehensive lineup of traditional and alternative strategies designed to <br>help you grow your wealth, preserve your wealth and everything in between.</p>
-              <p class="lead">Open account for free and start investing!</p>
+              <h2 data-i18n="secure-fast">Secure & Fast Transactions</h2>
+              <p class="lead" data-i18n="secure-desc">We offer a comprehensive lineup of traditional and alternative strategies designed to <br>help you grow your wealth, preserve your wealth and everything in between.</p>
+              <p class="lead" data-i18n="open-account">Open account for free and start investing!</p>
             </div>
             <!-- Call To Action Text Ends -->
             <!-- Call To Action Button Starts -->
-            <p class="bone"><a class="bone" href="auth.html#register"><button>Get started</button></a>
+            <p class="bone"><a class="bone" href="auth.html#register"><button data-i18n="get-started">Get started</button></a>
             </p>
             <!-- Call To Action Button Ends -->
           </div>
@@ -542,31 +563,8 @@
   <script src="scroll-behavior.js"></script>
   <script src="performance-diagnostics.js"></script>
 
-<!-- START: Mobile Menu Injected by updater -->
-<style>
-/* Mobile menu minimal styles (injected) */
-.mobile-navbar { display: none; position: fixed; top:0; left:0; right:0; background:#0b0b0b; color:#fff; z-index:9999; padding:12px 16px; align-items:center; justify-content:space-between; }
-.mobile-navbar .logo { font-weight:700; }
-.mobile-navbar .logo { display:flex; align-items:center; gap:8px; }
-.mobile-navbar .logo img { height:36px; width:auto; display:block; }
-.navbar-actions { display:flex; align-items:center; gap:12px; }
-.mobile-home-btn { color:#fff; text-decoration:none; font-size:18px; display:flex; align-items:center; justify-content:center; padding:4px 8px; cursor:pointer; transition:opacity 200ms; }
-.mobile-home-btn:hover { opacity:0.7; }
-.mobile-theme-toggle { background:none; border:none; color:#fff; font-size:18px; cursor:pointer; padding:4px 8px; display:flex; align-items:center; justify-content:center; transition:opacity 200ms; }
-.mobile-theme-toggle:hover { opacity:0.7; }
-.mobile-menu-btn { font-size:22px; cursor:pointer; }
-.mobile-menu-panel { position:fixed; top:0; right:0; width:75%; height:100%; background:#070707; padding:40px 20px; z-index:9998; overflow:auto; transform: translateX(100%); transition: transform 320ms cubic-bezier(.22,.9,.2,1); }
-.mobile-menu-panel a { display:block; color:#fff; padding:12px 0; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.04); }
-.mobile-menu-panel a:first-child { margin-top:40px; }
-.mobile-menu-panel.active { transform: translateX(0); }
-/* Hide mobile-only items by default, show them on narrow viewports */
-.mobile-only { display: none; }
-@media (max-width: 768px) { 
-  .mobile-navbar{ display:flex } 
-  .desktop-only { display:none !important }
-  .mobile-only { display:block !important }
-}
-</style>
+
+
 
 <div class="mobile-navbar">
   <div class="logo">
@@ -580,136 +578,59 @@
   <a href="index.html">Home</a>
   <a href="auth.html#login">Login</a>
   <a href="auth.html#register">Sign Up</a>
-  <a href="about.contact/about.html">About / Contact</a>
+  <a href="about.html#about">About / Contact</a>
 </div>
 
 <script>
-// Mobile menu: robust toggle, link-close, outside click, and Esc handling
-(function(){
+// Mobile menu: ensure clicking the hamburger closes the panel and links hide it
+document.addEventListener('DOMContentLoaded', function(){
   const btn = document.getElementById('mobileMenuToggle');
   const panel = document.getElementById('mobileMenuPanel');
-  if(!btn || !panel) return;
-
-  btn.setAttribute('role','button');
-  btn.setAttribute('aria-controls','mobileMenuPanel');
-  btn.setAttribute('aria-expanded','false');
-
-  function openPanel(){
-    panel.classList.add('active');
-    btn.setAttribute('aria-expanded','true');
-  }
-  function closePanel(){
-    panel.classList.remove('active');
-    btn.setAttribute('aria-expanded','false');
+  
+  if(!btn || !panel) {
+    console.warn('Mobile menu elements not found');
+    return;
   }
 
-  btn.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(panel.classList.contains('active')){
-      closePanel();
+  function toggle(){
+    if(panel.classList.contains('active')) {
+      panel.classList.remove('active');
     } else {
-      openPanel();
-    }
-  });
-
-  // Close when clicking any link inside the panel
-  panel.querySelectorAll('a').forEach(function(link){
-    link.addEventListener('click', function(){
-      closePanel();
-    });
-  });
-
-  // Prevent clicks inside panel bubbling
-  panel.addEventListener('click', function(e){ e.stopPropagation(); });
-
-  // Close when clicking outside
-  document.addEventListener('click', function(e){
-    if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)){
-      closePanel();
-    }
-  });
-
-  // Close on Escape
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape' || e.key === 'Esc'){
-      if(panel.classList.contains('active')){
-        closePanel();
-        btn.focus();
-      }
-    }
-  });
-})();
-</script>
-<script>
-// Fallback: ensure mobile navbar is visible on small viewports
-(function(){
-  const mobileSelector = '.mobile-navbar';
-  const desktopNavSelector = 'header nav, nav.main-nav, nav';
-
-  function updateMobileVisibility(){
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
-    const mobile = document.querySelector(mobileSelector);
-    const desktopNavs = document.querySelectorAll(desktopNavSelector);
-    if(mobile){
-      mobile.style.display = isMobile ? 'flex' : 'none';
-    }
-    desktopNavs.forEach(n => {
-      if(n && n.style){
-        n.style.display = isMobile ? 'none' : '';
-      }
-    });
-  }
-
-  window.addEventListener('resize', updateMobileVisibility);
-  // run once on load
-  updateMobileVisibility();
-})();
-</script>
-
-<!-- Mobile Theme Toggle -->
-<script>
-(function(){
-  const mobileThemeToggle = document.getElementById('mobileThemeToggle');
-  const mobileThemeIcon = document.getElementById('mobileThemeIcon');
-  
-  if (!mobileThemeToggle || !mobileThemeIcon) return;
-  
-  // Initialize theme on page load
-  function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-  }
-  
-  // Update the theme icon based on current theme
-  function updateThemeIcon(theme) {
-    if (theme === 'dark') {
-      mobileThemeIcon.classList.remove('fa-sun');
-      mobileThemeIcon.classList.add('fa-moon');
-    } else {
-      mobileThemeIcon.classList.remove('fa-moon');
-      mobileThemeIcon.classList.add('fa-sun');
+      panel.classList.add('active');
     }
   }
-  
-  // Handle theme toggle
-  mobileThemeToggle.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
+
+  btn.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+    toggle(); 
   });
   
-  // Initialize on load
-  initTheme();
-})();
+  panel.addEventListener('click', function(e){ 
+    e.stopPropagation(); 
+  });
+  
+  panel.querySelectorAll('a').forEach(function(a){ 
+    a.addEventListener('click', function(){ 
+      panel.classList.remove('active'); 
+    }); 
+  });
+  
+  document.addEventListener('click', function(e){ 
+    if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+      panel.classList.remove('active'); 
+    }
+  });
+  
+  document.addEventListener('keydown', function(e){ 
+    if(e.key === 'Escape' || e.key === 'Esc'){ 
+      panel.classList.remove('active'); 
+    } 
+  });
+  
+  console.log('Mobile menu initialized');
+});
 </script>
-  <!-- END: Mobile Menu Injected by updater -->
+
 </body>
 
 </html>

@@ -6,21 +6,58 @@
 class AuthService {
   constructor(apiBaseURL = 'http://localhost:5000/api') {
     this.apiBaseURL = apiBaseURL;
+    this.supabaseClient = window.supabaseClient || null;
   }
 
   /**
    * Register a new user
    * @param {Object} userData - User registration data
+   * @param {string} password - Password supplied separately
    * @returns {Promise} Registration response
    */
-  async register(userData) {
+  async register(userData, password = null) {
     try {
+      if (this.supabaseClient && this.supabaseClient.auth) {
+        const { data, error } = await this.supabaseClient.auth.signUp({
+          email: userData.email,
+          password,
+          options: {
+            data: {
+              first_name: userData.firstName,
+              last_name: userData.lastName,
+              country: userData.country,
+              countryCode: userData.countryCode,
+              phone: userData.phone,
+              currency: userData.currency,
+              referralCode: userData.referralCode || null,
+              wantsBonus: userData.wantsBonus || false
+            }
+          }
+        });
+
+        if (error) {
+          throw new Error(error.message || 'Registration failed');
+        }
+
+        if (data.session) {
+          localStorage.setItem('authToken', data.session.access_token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+
+        return { user: data.user, token: data.session?.access_token || null, message: 'Registration successful' };
+      }
+
+      const payload = { ...(userData || {}) };
+      if (password) {
+        payload.password = password;
+      }
+
       const response = await fetch(`${this.apiBaseURL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(payload)
       });
 
       if (!response.ok) {
@@ -48,6 +85,21 @@ class AuthService {
    */
   async login(email, password) {
     try {
+      if (this.supabaseClient && this.supabaseClient.auth) {
+        const { data, error } = await this.supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          throw new Error(error.message || 'Login failed');
+        }
+
+        if (data.session) {
+          localStorage.setItem('authToken', data.session.access_token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
+
+        return { user: data.user, token: data.session?.access_token || null, message: 'Login successful' };
+      }
+
       const response = await fetch(`${this.apiBaseURL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -108,13 +160,13 @@ class AuthService {
   }
 
   /**
-   * Verify reCAPTCHA token
-   * @param {string} token - reCAPTCHA token
+   * Verify Cloudflare Turnstile token
+   * @param {string} token - Cloudflare Turnstile token
    * @returns {Promise} Verification response
    */
   async verifyRecaptcha(token) {
     try {
-      const response = await fetch(`${this.apiBaseURL}/auth/verify-recaptcha`, {
+      const response = await fetch(`${this.apiBaseURL}/auth/verify-turnstile`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -124,7 +176,36 @@ class AuthService {
 
       return await response.json();
     } catch (error) {
-      console.error('reCAPTCHA verification error:', error);
+      console.error('Cloudflare Turnstile verification error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Validate a referral code via the backend
+   * @param {string} code - Referral code to validate
+   * @returns {Promise} Validation response
+   */
+  async validateReferralCode(code) {
+    try {
+      if (this.supabaseClient && this.supabaseClient.from) {
+        const { data, error } = await this.supabaseClient.from('referrals').select('code, bonus, referrer_name').eq('code', code).maybeSingle();
+        if (error) throw new Error(error.message || 'Unable to validate referral code');
+        if (!data) {
+          return { data: { valid: false } };
+        }
+        return { data: { valid: true, bonus: data.bonus || 5, referrerName: data.referrer_name || 'a referrer' } };
+      }
+
+      const response = await fetch(`${this.apiBaseURL}/referrals/validate?code=${encodeURIComponent(code)}`);
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error || 'Unable to validate referral code');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Referral validation error:', error);
       throw error;
     }
   }
@@ -206,3 +287,6 @@ class AuthService {
 
 // Create global instance
 const authService = new AuthService();
+window.AuthService = authService;
+window.authAPI = authService;
+window.authService = authService;

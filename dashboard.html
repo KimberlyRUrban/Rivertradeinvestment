@@ -109,6 +109,12 @@
             <div class="balance-amount" id="mobileAvailableBalance" data-balance-amount>$0.00</div>
           </div>
 
+          <!-- Broker Account Balance -->
+          <div class="balance-item">
+            <div class="balance-label">Broker Account</div>
+            <div class="balance-amount" id="mobileBrokerBalance" data-balance-amount>$0.00</div>
+          </div>
+
           <!-- Locked Balance -->
           <div class="balance-item locked">
             <div class="balance-label">
@@ -160,6 +166,39 @@
             </div>
           </div>
         </div>
+
+        <!-- Crypto Holdings Preview -->
+        <div class="holdings-summary mobile-holdings" aria-label="Crypto holdings preview">
+          <h3>Crypto Holdings</h3>
+          <div class="holdings-grid" id="mobileHoldingsGrid">
+            <div class="holding-card"><span>BTC</span><strong id="mobileHolding-BTC">0.000000</strong></div>
+            <div class="holding-card"><span>ETH</span><strong id="mobileHolding-ETH">0.000000</strong></div>
+            <div class="holding-card"><span>USDT</span><strong id="mobileHolding-USDT">0.000000</strong></div>
+            <div class="holding-card"><span>BNB</span><strong id="mobileHolding-BNB">0.000000</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Desktop account overview -->
+    <section class="desktop-overview" aria-label="Account overview">
+      <div class="overview-grid">
+        <div class="overview-card">
+          <div class="card-label">Available Balance</div>
+          <div class="card-value" id="desktopAvailableBalance">$0.00</div>
+        </div>
+        <div class="overview-card">
+          <div class="card-label">Investment Profit</div>
+          <div class="card-value" id="desktopInvestmentProfit">$0.00</div>
+        </div>
+        <div class="overview-card">
+          <div class="card-label">Broker Account</div>
+          <div class="card-value" id="desktopBrokerBalance">$0.00</div>
+        </div>
+        <div class="overview-card">
+          <div class="card-label">Locked Balance</div>
+          <div class="card-value" id="desktopLockedBalance">$0.00</div>
+        </div>
       </div>
     </section>
 
@@ -199,6 +238,18 @@
         <h3>DOGE / USDT</h3>
         <div class="value" id="dogePrice">--</div>
         <div class="muted">24h Change: <span id="dogeChange">--</span></div>
+      </div>
+    </section>
+
+    <section class="holdings-summary desktop-holdings" aria-label="Crypto holdings summary">
+      <h2>Crypto Holdings</h2>
+      <div class="holdings-grid" id="desktopHoldingsGrid">
+        <div class="holding-card"><span>BTC</span><strong id="holding-BTC">0.000000</strong></div>
+        <div class="holding-card"><span>ETH</span><strong id="holding-ETH">0.000000</strong></div>
+        <div class="holding-card"><span>USDT</span><strong id="holding-USDT">0.000000</strong></div>
+        <div class="holding-card"><span>BNB</span><strong id="holding-BNB">0.000000</strong></div>
+        <div class="holding-card"><span>XRP</span><strong id="holding-XRP">0.000000</strong></div>
+        <div class="holding-card"><span>DOGE</span><strong id="holding-DOGE">0.000000</strong></div>
       </div>
     </section>
 
@@ -339,12 +390,36 @@
           <option value="card">Debit/Credit Card</option>
         </select>
       </div>
-      <div id="depositWallet" style="display:none; margin-top:15px; padding:15px; background:#f0f0f0; border-radius:8px;">
-        <p><strong>Send funds to this address:</strong></p>
-        <code style="word-break:break-all; background:#fff; padding:10px; border-radius:4px; display:block; margin:10px 0;">
-          1A1z7agoat7W8EzGtqtU2CCZN6SHDA5tcD
-        </code>
-        <p><small>Bitcoin wallet address</small></p>
+      <div class="form-group" id="depositCurrencyGroup" style="display:none;">
+        <label for="depositCurrency">Cryptocurrency</label>
+        <select id="depositCurrency">
+          <option value="BTC">Bitcoin (BTC)</option>
+          <option value="USDT">Tether (USDT)</option>
+          <option value="ETH">Ethereum (ETH)</option>
+          <option value="BNB">Binance Coin (BNB)</option>
+          <option value="SOL">Solana (SOL)</option>
+          <option value="MATIC">Polygon (MATIC)</option>
+          <option value="TRX">Tron (TRX)</option>
+        </select>
+      </div>
+      <div class="form-group" id="depositNetworkGroup" style="display:none;">
+        <label for="depositNetwork">Select Network</label>
+        <select id="depositNetwork">
+          <option value="">Select network</option>
+          <option value="btc">Bitcoin Network</option>
+          <option value="mainnet">Mainnet</option>
+          <option value="bep20">BEP20 (Binance Smart Chain)</option>
+          <option value="erc20">ERC20 (Ethereum)</option>
+          <option value="trc20">TRC20 (Tron)</option>
+          <option value="solana">Solana Network</option>
+          <option value="polygon">Polygon (MATIC)</option>
+        </select>
+      </div>
+      <div id="depositInstructionsPanel" style="display:none; margin-top:15px; padding:15px; background:#f0f0f0; border-radius:8px;">
+        <p id="depositInstructionTitle" style="margin:0 0 10px 0;"></p>
+        <code id="depositAddressDisplay" style="word-break:break-all; background:#fff; padding:10px; border-radius:4px; display:block; margin:0 0 10px 0;"></code>
+        <button type="button" id="copyDepositAddress" class="btn-secondary" style="display:none; margin-bottom:10px;">Copy address</button>
+        <div id="depositMethodDetails" style="white-space:pre-wrap; color:#333;"></div>
       </div>
     </div>
     <footer class="modal-footer">
@@ -371,16 +446,92 @@
         <small>Minimum withdrawal: $50</small>
       </div>
       <div class="form-group">
-        <label for="withdrawMethod">Withdraw To</label>
+        <label for="withdrawMethod">Withdrawal Method</label>
         <select id="withdrawMethod">
           <option value="">Select withdrawal method</option>
-          <option value="crypto">Cryptocurrency Wallet</option>
+          <option value="wallet">Wallet Address</option>
           <option value="bank">Bank Account</option>
+          <option value="paypal">PayPal</option>
+          <option value="stripe">Credit/Debit Card (Stripe)</option>
+          <option value="sepa">SEPA Transfer</option>
         </select>
       </div>
-      <div class="form-group">
-        <label for="withdrawAddress">Wallet/Account Address</label>
-        <input id="withdrawAddress" type="text" placeholder="Enter your wallet or account details" />
+      <div id="withdrawMethodDetailsContainer">
+        <div id="withdrawDetailsWallet" class="withdraw-details-group" data-method="wallet">
+          <div class="form-group">
+            <label for="withdrawAddress">Wallet Address</label>
+            <input id="withdrawAddress" type="text" placeholder="Enter your wallet address" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawNetwork">Network (if applicable)</label>
+            <select id="withdrawNetwork">
+              <option value="">-- Select Network --</option>
+              <option value="btc">Bitcoin Network</option>
+              <option value="mainnet">Mainnet</option>
+              <option value="bep20">BEP20</option>
+              <option value="erc20">ERC20</option>
+              <option value="trc20">TRC20</option>
+              <option value="solana">Solana Network</option>
+              <option value="polygon">Polygon (MATIC)</option>
+            </select>
+          </div>
+        </div>
+        <div id="withdrawDetailsBank" class="withdraw-details-group" data-method="bank" style="display:none;">
+          <div class="form-group">
+            <label for="withdrawBankAccountName">Account Name</label>
+            <input id="withdrawBankAccountName" type="text" placeholder="Account holder name" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawBankAccountNumber">Account Number</label>
+            <input id="withdrawBankAccountNumber" type="text" placeholder="Account number" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawBankRoutingNumber">Routing Number</label>
+            <input id="withdrawBankRoutingNumber" type="text" placeholder="Routing number" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawBankName">Bank Name</label>
+            <input id="withdrawBankName" type="text" placeholder="Bank name" />
+          </div>
+        </div>
+        <div id="withdrawDetailsPaypal" class="withdraw-details-group" data-method="paypal" style="display:none;">
+          <div class="form-group">
+            <label for="withdrawPaypalEmail">PayPal Email</label>
+            <input id="withdrawPaypalEmail" type="email" placeholder="example@paypal.com" />
+          </div>
+        </div>
+        <div id="withdrawDetailsStripe" class="withdraw-details-group" data-method="stripe" style="display:none;">
+          <div class="form-group">
+            <label for="withdrawCardName">Cardholder Name</label>
+            <input id="withdrawCardName" type="text" placeholder="Name on card" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawCardNumber">Card Number</label>
+            <input id="withdrawCardNumber" type="text" placeholder="1234 5678 9012 3456" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawCardExpiry">Expiry Date</label>
+            <input id="withdrawCardExpiry" type="text" placeholder="MM/YY" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawCardCvv">CVV</label>
+            <input id="withdrawCardCvv" type="text" placeholder="CVV" />
+          </div>
+        </div>
+        <div id="withdrawDetailsSepa" class="withdraw-details-group" data-method="sepa" style="display:none;">
+          <div class="form-group">
+            <label for="withdrawSepaIban">IBAN</label>
+            <input id="withdrawSepaIban" type="text" placeholder="IBAN" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawSepaBic">BIC / SWIFT</label>
+            <input id="withdrawSepaBic" type="text" placeholder="BIC or SWIFT code" />
+          </div>
+          <div class="form-group">
+            <label for="withdrawSepaAccountHolder">Account Holder</label>
+            <input id="withdrawSepaAccountHolder" type="text" placeholder="Account holder name" />
+          </div>
+        </div>
       </div>
     </div>
     <footer class="modal-footer">
@@ -399,6 +550,20 @@
     </header>
     <div class="invest-modal-body">
       <p id="investPlanDetails">Plan details will appear here.</p>
+      <div class="form-group">
+        <label for="investSource">Funding Source</label>
+        <select id="investSource">
+          <option value="balance">Available Balance</option>
+          <option value="brokerBalance">Broker Account</option>
+          <option value="BTC">BTC Holdings</option>
+          <option value="ETH">ETH Holdings</option>
+          <option value="USDT">USDT Holdings</option>
+          <option value="BNB">BNB Holdings</option>
+          <option value="XRP">XRP Holdings</option>
+          <option value="DOGE">DOGE Holdings</option>
+        </select>
+      </div>
+      <div class="invest-source-info" id="investSourceInfo">Available balance shown above will be used for this investment.</div>
       <div class="form-group">
         <label for="investAmount">Amount</label>
         <input id="investAmount" type="number" min="0" step="0.01" />
