@@ -136,11 +136,7 @@
         </div>
 
         <div class="captcha-container" style="margin: 20px 0;">
-          <div id="captcha-fallback" style="padding: 15px; border: 2px dashed #888; border-radius: 5px; background: rgba(255,255,255,0.1); text-align: center; font-size: 14px;">
-            <p style="margin: 0; color: #999;">🔒 CAPTCHA - Development Mode</p>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: #aaa;">Real Cloudflare Turnstile requires Site Key</p>
-          </div>
-          <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY" data-theme="dark" style="display: none;"></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEPwcpuzRvyNMjOY" data-theme="dark"></div>
         </div>
 
         <button type="submit" class="btn">Register</button>
@@ -169,11 +165,7 @@
         </div>
 
         <div class="captcha-container" style="margin: 20px 0;">
-          <div id="captcha-fallback-login" style="padding: 15px; border: 2px dashed #888; border-radius: 5px; background: rgba(255,255,255,0.1); text-align: center; font-size: 14px;">
-            <p style="margin: 0; color: #999;">🔒 CAPTCHA - Development Mode</p>
-            <p style="margin: 5px 0 0 0; font-size: 12px; color: #aaa;">Real Cloudflare Turnstile requires Site Key</p>
-          </div>
-          <div class="cf-turnstile" data-sitekey="YOUR_CLOUDFLARE_SITE_KEY" data-theme="dark" style="display: none;"></div>
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEPwcpuzRvyNMjOY" data-theme="dark"></div>
         </div>
 
         <button type="submit" class="btn">Sign In</button>
@@ -186,8 +178,30 @@
   </div>
 
   <script>
-    window.__SUPABASE_URL__ = 'https://bxyqogteqwmumsoqrzak.supabase.co';
-    window.__SUPABASE_ANON_KEY__ = 'sb_publishable_Mhb67K8TFH6n9ukhC9T0IA_U9WlzsVJ';
+    // Fetch configuration from server at runtime
+    async function loadSupabaseConfig() {
+      try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        
+        if (config.configured) {
+          window.__SUPABASE_URL__ = config.supabaseUrl;
+          window.__SUPABASE_ANON_KEY__ = config.supabaseAnonKey;
+          console.log('✓ Supabase config loaded from server');
+        } else {
+          console.warn('⚠️ Supabase not configured. Using demo mode.');
+          window.__SUPABASE_URL__ = '';
+          window.__SUPABASE_ANON_KEY__ = '';
+        }
+      } catch (error) {
+        console.error('Failed to load config:', error);
+        window.__SUPABASE_URL__ = '';
+        window.__SUPABASE_ANON_KEY__ = '';
+      }
+    }
+    
+    // Load config before initializing Supabase
+    loadSupabaseConfig();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-client.js"></script>
