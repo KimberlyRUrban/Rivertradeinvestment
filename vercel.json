@@ -7,7 +7,31 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**/*",
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Image/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "Icons/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "icoinred/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "crypt-icon/**",
       "use": "@vercel/static"
     }
   ],
@@ -21,11 +45,7 @@
       "dest": "/api/health"
     },
     {
-      "src": "/ready",
-      "dest": "/api/health"
-    },
-    {
-      "src": "/(.*\\.(html|css|js|json|png|jpg|jpeg|svg|ico))",
+      "src": "/(.*\\.(html|css|js|json|png|jpg|jpeg|svg|ico|webp))",
       "dest": "/$1"
     },
     {
