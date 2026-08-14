@@ -6,17 +6,40 @@ const loginForm = document.getElementById("loginForm");
 const authAPI = window.authAPI || window.AuthService || authService;
 
 // ============ Cloudflare Turnstile Verification ============
+function ensureTurnstileWidgets() {
+  if (!window.turnstile) return false;
+
+  let created = false;
+  document.querySelectorAll('.cf-turnstile').forEach((element) => {
+    if (element.dataset.widgetId) return;
+
+    const siteKey = element.getAttribute('data-sitekey') || '';
+    if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) return;
+
+    try {
+      const widgetId = window.turnstile.render(element, {
+        sitekey: siteKey,
+        theme: element.getAttribute('data-theme') || 'auto'
+      });
+      element.dataset.widgetId = widgetId;
+      created = true;
+    } catch (err) {
+      console.warn('Failed to render Cloudflare Turnstile widget:', err);
+    }
+  });
+
+  return created;
+}
+
 function verifyRecaptcha(formId) {
   try {
-    // Allow skipping Turnstile in development mode
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+
     if (!window.turnstile) {
-      console.warn('Cloudflare Turnstile not loaded (development mode - skipping)');
+      console.warn('Cloudflare Turnstile not loaded yet');
       return isDevelopment ? true : false;
     }
 
-    // Get the specific form's Turnstile widget
     const form = document.getElementById(formId);
     if (!form) {
       console.error('Form not found: ' + formId);
@@ -25,19 +48,23 @@ function verifyRecaptcha(formId) {
 
     const turnstileElement = form.querySelector('.cf-turnstile');
     if (!turnstileElement) {
-      console.warn('Cloudflare Turnstile element not found in form; skipping validation');
+      console.warn('Cloudflare Turnstile element not found in form');
       return true;
     }
 
     const siteKey = turnstileElement.getAttribute('data-sitekey') || '';
     if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) {
-      console.warn('No valid Cloudflare Turnstile site key configured; skipping validation in development mode');
+      console.warn('No valid Cloudflare Turnstile site key configured');
       return isDevelopment ? true : false;
     }
 
-    // Get the Turnstile response token
-    const response = window.turnstile.getResponse(turnstileElement);
-    
+    if (!turnstileElement.dataset.widgetId) {
+      ensureTurnstileWidgets();
+    }
+
+    const widgetId = turnstileElement.dataset.widgetId || '';
+    const response = widgetId ? window.turnstile.getResponse(widgetId) : '';
+
     if (response && response.length > 0) {
       console.log('Cloudflare Turnstile verified successfully');
       return true;
@@ -47,10 +74,13 @@ function verifyRecaptcha(formId) {
     return false;
   } catch (err) {
     console.error('Cloudflare Turnstile verification error:', err);
-    // In development, allow the form to proceed
     return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   }
 }
+
+window.addEventListener('load', () => {
+  ensureTurnstileWidgets();
+});
 
 // ============ Tab Switching ============
 registerTab.addEventListener("click", () => {
