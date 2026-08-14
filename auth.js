@@ -6,6 +6,14 @@ const loginForm = document.getElementById("loginForm");
 const authAPI = window.authAPI || window.AuthService || authService;
 
 // ============ Cloudflare Turnstile Verification ============
+function getTurnstileOriginWarning() {
+  if (window.location.protocol === 'file:') {
+    return 'Open this page from a web server or HTTPS domain. Cloudflare Turnstile does not allow file:// origins.';
+  }
+
+  return 'This hostname is not enabled for the current Cloudflare Turnstile site. Add this domain in the Cloudflare Turnstile dashboard, or use the site’s production HTTPS hostname.';
+}
+
 function ensureTurnstileWidgets() {
   if (!window.turnstile) return false;
 
@@ -33,11 +41,9 @@ function ensureTurnstileWidgets() {
 
 function verifyRecaptcha(formId) {
   try {
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-
     if (!window.turnstile) {
       console.warn('Cloudflare Turnstile not loaded yet');
-      return isDevelopment ? true : false;
+      return false;
     }
 
     const form = document.getElementById(formId);
@@ -52,10 +58,15 @@ function verifyRecaptcha(formId) {
       return true;
     }
 
+    if (window.location.protocol === 'file:') {
+      console.warn(getTurnstileOriginWarning());
+      return false;
+    }
+
     const siteKey = turnstileElement.getAttribute('data-sitekey') || '';
     if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) {
       console.warn('No valid Cloudflare Turnstile site key configured');
-      return isDevelopment ? true : false;
+      return false;
     }
 
     if (!turnstileElement.dataset.widgetId) {
@@ -70,11 +81,12 @@ function verifyRecaptcha(formId) {
       return true;
     }
 
+    console.warn(getTurnstileOriginWarning());
     console.warn('Cloudflare Turnstile not completed - user must solve the challenge');
     return false;
   } catch (err) {
     console.error('Cloudflare Turnstile verification error:', err);
-    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    return false;
   }
 }
 
