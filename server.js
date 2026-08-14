@@ -293,6 +293,18 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === 'GET' && reqUrl.pathname === '/api/config') {
+      const config = {
+        configured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY),
+        supabaseUrl: process.env.SUPABASE_URL || '',
+        supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+        cloudflareSiteKey: process.env.CLOUDFLARE_SITE_KEY || '0x4AAAAAAEPwcpuzRvyNMjOY',
+        environment: process.env.NODE_ENV || 'development'
+      };
+      sendJson(res, 200, config);
+      return;
+    }
+
     if (req.method === 'POST' && reqUrl.pathname === '/api/auth/register') {
       const body = await readJsonBody(req);
       const payload = sanitizeUserRecord(body);
