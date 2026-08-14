@@ -4,9 +4,9 @@
  */
 
 class AuthService {
-  constructor(apiBaseURL = 'http://localhost:5000/api') {
+  constructor(apiBaseURL = (typeof window !== 'undefined' && window.location && window.location.origin ? `${window.location.origin}/api` : '/api')) {
     this.apiBaseURL = apiBaseURL;
-    this.supabaseClient = window.supabaseClient || null;
+    this.supabaseClient = typeof window !== 'undefined' ? (window.supabaseClient || null) : null;
   }
 
   /**
