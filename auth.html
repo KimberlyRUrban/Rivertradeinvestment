@@ -193,6 +193,14 @@
           window.__SUPABASE_URL__ = '';
           window.__SUPABASE_ANON_KEY__ = '';
         }
+
+        if (config.cloudflareSiteKey) {
+          document.querySelectorAll('.cf-turnstile').forEach((el) => {
+            el.setAttribute('data-sitekey', config.cloudflareSiteKey);
+          });
+          window.__CLOUDFLARE_SITE_KEY__ = config.cloudflareSiteKey;
+          console.log('✓ Cloudflare site key loaded from server');
+        }
       } catch (error) {
         console.error('Failed to load config:', error);
         window.__SUPABASE_URL__ = '';
