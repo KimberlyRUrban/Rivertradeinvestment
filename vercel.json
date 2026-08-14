@@ -3,43 +3,34 @@
   "buildCommand": "npm install",
   "builds": [
     {
-      "src": "server.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     },
     {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.css",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.js",
+      "src": "public/**/*",
       "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server.js"
+      "dest": "/api/$1"
     },
     {
       "src": "/health",
-      "dest": "/server.js"
+      "dest": "/api/health"
     },
     {
-      "src": "/(.*\\.(html|css|js|json))",
+      "src": "/ready",
+      "dest": "/api/health"
+    },
+    {
+      "src": "/(.*\\.(html|css|js|json|png|jpg|jpeg|svg|ico))",
       "dest": "/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": [
-    "SUPABASE_URL",
-    "SUPABASE_ANON_KEY",
-    "SUPABASE_SERVICE_ROLE_KEY"
   ]
 }
