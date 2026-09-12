@@ -298,7 +298,6 @@ const server = http.createServer(async (req, res) => {
         configured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY),
         supabaseUrl: process.env.SUPABASE_URL || '',
         supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
-        cloudflareSiteKey: process.env.CLOUDFLARE_SITE_KEY || '0x4AAAAAAEPwcpuzRvyNMjOY',
         environment: process.env.NODE_ENV || 'development'
       };
       sendJson(res, 200, config);
@@ -392,38 +391,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'POST' && reqUrl.pathname === '/api/auth/verify-turnstile') {
-      const body = await readJsonBody(req);
-      const token = body && body.token ? String(body.token).trim() : '';
-
-      if (!token) {
-        sendJson(res, 400, { success: false, error: 'No token provided' });
-        return;
-      }
-
-      const cloudflareSecretKey = process.env.CLOUDFLARE_SECRET_KEY || '';
-      if (cloudflareSecretKey) {
-        const verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
-        const formData = new URLSearchParams();
-        formData.append('secret', cloudflareSecretKey);
-        formData.append('response', token);
-
-        const response = await fetch(verifyUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: formData.toString()
-        });
-
-        const result = await response.json();
-        if (!result.success) {
-          log('warn', 'Turnstile verification failed', { result });
-          sendJson(res, 400, { success: false, error: 'Turnstile validation failed' });
-          return;
-        }
-      } else if (process.env.NODE_ENV !== 'production') {
-        log('info', 'Turnstile skipped in development mode', { tokenPreview: token.slice(0, 8) });
-      }
-
-      sendJson(res, 200, { success: true, message: 'Cloudflare Turnstile verified' });
+      sendJson(res, 200, { success: true, message: 'Turnstile verification disabled' });
       return;
     }
 
