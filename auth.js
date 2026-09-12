@@ -5,95 +5,6 @@ const registerForm = document.getElementById("registerForm");
 const loginForm = document.getElementById("loginForm");
 const authAPI = window.authAPI || window.AuthService || authService;
 
-// ============ Cloudflare Turnstile Verification ============
-function getTurnstileOriginWarning() {
-  if (window.location.protocol === 'file:') {
-    return 'Open this page from a web server or HTTPS domain. Cloudflare Turnstile does not allow file:// origins.';
-  }
-
-  return 'This hostname is not enabled for the current Cloudflare Turnstile site. Add this domain in the Cloudflare Turnstile dashboard, or use the site’s production HTTPS hostname.';
-}
-
-function ensureTurnstileWidgets() {
-  if (!window.turnstile) return false;
-
-  let created = false;
-  document.querySelectorAll('.cf-turnstile').forEach((element) => {
-    if (element.dataset.widgetId) return;
-
-    const siteKey = element.getAttribute('data-sitekey') || '';
-    if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) return;
-
-    try {
-      const widgetId = window.turnstile.render(element, {
-        sitekey: siteKey,
-        theme: element.getAttribute('data-theme') || 'auto'
-      });
-      element.dataset.widgetId = widgetId;
-      created = true;
-    } catch (err) {
-      console.warn('Failed to render Cloudflare Turnstile widget:', err);
-    }
-  });
-
-  return created;
-}
-
-function verifyRecaptcha(formId) {
-  try {
-    if (!window.turnstile) {
-      console.warn('Cloudflare Turnstile not loaded yet');
-      return false;
-    }
-
-    const form = document.getElementById(formId);
-    if (!form) {
-      console.error('Form not found: ' + formId);
-      return false;
-    }
-
-    const turnstileElement = form.querySelector('.cf-turnstile');
-    if (!turnstileElement) {
-      console.warn('Cloudflare Turnstile element not found in form');
-      return true;
-    }
-
-    if (window.location.protocol === 'file:') {
-      console.warn(getTurnstileOriginWarning());
-      return false;
-    }
-
-    const siteKey = turnstileElement.getAttribute('data-sitekey') || '';
-    if (!siteKey || siteKey.includes('YOUR_CLOUDFLARE_SITE_KEY')) {
-      console.warn('No valid Cloudflare Turnstile site key configured');
-      return false;
-    }
-
-    if (!turnstileElement.dataset.widgetId) {
-      ensureTurnstileWidgets();
-    }
-
-    const widgetId = turnstileElement.dataset.widgetId || '';
-    const response = widgetId ? window.turnstile.getResponse(widgetId) : '';
-
-    if (response && response.length > 0) {
-      console.log('Cloudflare Turnstile verified successfully');
-      return true;
-    }
-
-    console.warn(getTurnstileOriginWarning());
-    console.warn('Cloudflare Turnstile not completed - user must solve the challenge');
-    return false;
-  } catch (err) {
-    console.error('Cloudflare Turnstile verification error:', err);
-    return false;
-  }
-}
-
-window.addEventListener('load', () => {
-  ensureTurnstileWidgets();
-});
-
 // ============ Tab Switching ============
 registerTab.addEventListener("click", () => {
   registerTab.classList.add("active");
@@ -119,18 +30,6 @@ function resetMessages() {
   const loginMsgEl = document.getElementById('loginMessage');
   if (msgEl) msgEl.textContent = '';
   if (loginMsgEl) loginMsgEl.textContent = '';
-}
-
-function resetRecaptchas() {
-  if (window.turnstile) {
-    try {
-      document.querySelectorAll('.cf-turnstile').forEach((el) => {
-        window.turnstile.reset(el);
-      });
-    } catch (err) {
-      console.warn('Error resetting Cloudflare Turnstile:', err);
-    }
-  }
 }
 
 function showError(messageEl, message) {
@@ -283,12 +182,6 @@ registerForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  // Verify Cloudflare Turnstile
-  if (!verifyRecaptcha('registerForm')) {
-    showError(msgEl, 'Please complete the Cloudflare Turnstile verification.');
-    return;
-  }
-
   // Disable button during submission
   if (submitBtn) {
     submitBtn.disabled = true;
@@ -360,12 +253,6 @@ loginForm.addEventListener("submit", async (e) => {
 
   if (!password) {
     showError(msgEl, 'Password is required.');
-    return;
-  }
-
-  // Verify Cloudflare Turnstile
-  if (!verifyRecaptcha('loginForm')) {
-    showError(msgEl, 'Please complete the Cloudflare Turnstile verification.');
     return;
   }
 
