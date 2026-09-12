@@ -172,47 +172,6 @@ sup {
     background-color: rgb(183, 178, 172);
 }
 
-/* CAPTCHA container: center the captcha, avoid overflow, and scale on small screens */
-.captcha-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 15px 0;
-    min-width: 0;
-    flex-wrap: wrap;
-}
-
-.captcha-container .cf-turnstile {
-    transform-origin: 0 0;
-    margin: 0;
-}
-
-/* Slightly scale Cloudflare Turnstile on narrow viewports so it doesn't break layout */
-@media (max-width: 420px) {
-    .captcha-container .cf-turnstile {
-        transform: scale(0.85);
-    }
-}
-
-@media (max-width: 360px) {
-    .captcha-container .cf-turnstile {
-        transform: scale(0.75);
-    }
-}
-
-/* Show validation tip for captcha if present */
-.captcha-container .wpcf7-not-valid-tip,
-.captcha-container .wpcf7-form-control-wrap .wpcf7-not-valid-tip {
-    display: block;
-    color: #ff6b6b;
-    margin-top: 8px;
-    font-size: 13px;
-}
-
-/* Small banner shown in development when the test reCAPTCHA key is active */
-/* dev banner styling removed — banner insertion disabled in JS */
-
 /* Sign-in hint below register button */
 .signin-text {
     text-align: center;
