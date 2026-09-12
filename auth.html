@@ -15,18 +15,6 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="auth.css" />
   <link rel="stylesheet" href="language.css" />
-  
-  <!-- Cloudflare Turnstile -->
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-  <style>
-    /* Hide Turnstile errors in development mode */
-    .cf-turnstile iframe[src*="YOUR_CLOUDFLARE_SITE_KEY"] {
-      border: 2px solid #ff9800;
-    }
-    .turnstile-error {
-      display: none !important;
-    }
-  </style>
 </head>
 
 <body>
@@ -135,10 +123,6 @@
             regulatory purpose in accordance with GDPR</label>
         </div>
 
-        <div class="captcha-container" style="margin: 20px 0;">
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEPwcpuzRvyNMjOY" data-theme="dark"></div>
-        </div>
-
         <button type="submit" class="btn">Register</button>
         <div id="registerMessage" class="form-message" aria-live="polite"></div>
 
@@ -164,10 +148,6 @@
           <a href="#">Forgot Password?</a>
         </div>
 
-        <div class="captcha-container" style="margin: 20px 0;">
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEPwcpuzRvyNMjOY" data-theme="dark"></div>
-        </div>
-
         <button type="submit" class="btn">Sign In</button>
         <div id="loginMessage" class="form-message" aria-live="polite"></div>
         <p class="signup-text">
@@ -183,7 +163,7 @@
       try {
         const response = await fetch('/api/config');
         const config = await response.json();
-        
+
         if (config.configured) {
           window.__SUPABASE_URL__ = config.supabaseUrl;
           window.__SUPABASE_ANON_KEY__ = config.supabaseAnonKey;
@@ -193,21 +173,13 @@
           window.__SUPABASE_URL__ = '';
           window.__SUPABASE_ANON_KEY__ = '';
         }
-
-        if (config.cloudflareSiteKey) {
-          document.querySelectorAll('.cf-turnstile').forEach((el) => {
-            el.setAttribute('data-sitekey', config.cloudflareSiteKey);
-          });
-          window.__CLOUDFLARE_SITE_KEY__ = config.cloudflareSiteKey;
-          console.log('✓ Cloudflare site key loaded from server');
-        }
       } catch (error) {
         console.error('Failed to load config:', error);
         window.__SUPABASE_URL__ = '';
         window.__SUPABASE_ANON_KEY__ = '';
       }
     }
-    
+
     // Load config before initializing Supabase
     loadSupabaseConfig();
   </script>
